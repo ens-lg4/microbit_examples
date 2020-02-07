@@ -11,28 +11,25 @@ wall    = 'O'
 path    = '.'
 
 def init_board(width, height, obstacles):
+
     board = [[empty]*height for x in range(width)]
 
-    for _ in range(obstacles):
+    def place_randomly_on_board(symbol):
         x = randint(0, width-1)
         y = randint(0, height-1)
-        board[x][y] = wall
+        while board[x][y] != empty:
+            x = randint(0, width-1)
+            y = randint(0, height-1)
+        board[x][y] = symbol
+        return x,y
 
-    Ax = randint(0, width-1)
-    Ay = randint(0, height-1)
-    while board[Ax][Ay] != empty:
-        Ax = randint(0, width-1)
-        Ay = randint(0, height-1)
-    board[Ax][Ay] = 'A'
+    for _ in range(obstacles):
+        place_randomly_on_board(wall)
 
-    Bx = randint(0, width-1)
-    By = randint(0, height-1)
-    while board[Bx][By] != empty:
-        Bx = randint(0, width-1)
-        By = randint(0, height-1)
-    board[Bx][By] = 'B'
+    A = place_randomly_on_board('A')
+    B = place_randomly_on_board('B')
 
-    return board, (Ax, Ay), (Bx, By)
+    return board, A, B
 
 
 def show_board(board):
