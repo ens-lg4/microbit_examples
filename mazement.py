@@ -6,25 +6,25 @@
 
 from random import randint
 
-empty   = ' '
-wall    = 'O'
-path    = '.'
+empty_symbol    = ' '
+wall_symbol     = 'O'
+path_symbol     = '.'
 
 def init_board(width, height, obstacles):
 
-    board = [[empty]*height for x in range(width)]
+    board = [[empty_symbol]*height for x in range(width)]
 
     def place_randomly_on_board(symbol):
         x = randint(0, width-1)
         y = randint(0, height-1)
-        while board[x][y] != empty:
+        while board[x][y] != empty_symbol:
             x = randint(0, width-1)
             y = randint(0, height-1)
         board[x][y] = symbol
         return x,y
 
     for _ in range(obstacles):
-        place_randomly_on_board(wall)
+        place_randomly_on_board(wall_symbol)
 
     A = place_randomly_on_board('A')
     B = place_randomly_on_board('B')
@@ -38,7 +38,7 @@ def show_board(board):
 
     for y in range(len(board[0])):
         for x in range(len(board)):
-            print('{} '.format(board[x][y]), end='')
+            print('{}'.format(board[x][y]), end='')
         print()
 
 
@@ -60,12 +60,12 @@ def find_path(board, A, B):
                     if N==B:
                         prev[ N ] = C
                         P = prev[N]
+                        path_list = []
                         while P!=A:
-                            px, py = P
-                            board[px][py]=path                  # show the path on the board
+                            path_list.insert(0, P)
                             P = prev[P]
-                        return True
-                    elif board[nx][ny] == empty and N not in all_accessible_set:  # new accessible?
+                        return (True, path_list)
+                    elif board[nx][ny] == empty_symbol and N not in all_accessible_set:  # new accessible?
                         prev[ N ] = C
                         all_accessible_set.add( N )
                         new_edge_set.add( N )
@@ -73,12 +73,15 @@ def find_path(board, A, B):
         if new_edge_set:
             current_edge_set = new_edge_set
         else:
-            return False
+            return (False, [])
 
 
-maze, A, B = init_board(40, 20, 320)
+maze, A, B = init_board(40, 20, 250)
 
-found_path = find_path(maze, A, B)
+found_path, path_list = find_path(maze, A, B)
+
+for px, py in path_list:
+    maze[px][py] = path_symbol
 
 show_board(maze)    # will contain the path if found
 
