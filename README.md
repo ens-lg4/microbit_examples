@@ -7,7 +7,7 @@ This repository contains examples of [MicroPython games for BBC micro:bit](https
 4. a piezo buzzer (pin2)
 5. on-board batteries for autonomy
 
-# Connect 4
+# [Connect 4](connect4.py)
 
 A two-player version of classic [Connect 4](https://en.wikipedia.org/wiki/Connect_Four) game.
 
