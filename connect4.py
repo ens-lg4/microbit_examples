@@ -9,8 +9,8 @@ import neopixel
 #
 screen          = neopixel.NeoPixel(pin0, 64)
 empty           = (0, 0, 0)     # black
-neutral_edge    = (0, 10, 0)    # green
-draw_edge       = (10, 0, 10)   # purple
+edge_colour     = (0, 10, 0)    # green
+draw_colour     = (10, 0, 10)   # purple
 connected       = 4
 width           = 7
 bottom          = 7
@@ -37,30 +37,34 @@ def paint_edge(colour):
         plot(width,i+1, colour)
 
 
-def has_won(x, y, player):
-    'Checks that the current player has won by the last move'
+def trace_winning_coords(x, y, player):
+    'Return the list of all winning coordinates that the current player has won by the last move'
 
-    def check_bidirection(dx, dy):
+    def trace_bidirection(dx, dy):
         'Combine two opposite (uni)directions into one line passing through (x,y)'
 
-        def count_unidirection(dx, dy):
-            'Count how many steps the line extends from (x,y) in the given direction (dx,dy), constrained by the board edges'
+        def trace_unidirection(dx, dy):
+            'Trace the longest line that extends from (x,y) in the given direction (dx,dy), constrained by the board edges'
 
             dist = 0
+            coords = []
             nx = x + dx*(dist+1)
             ny = y + dy*(dist+1)
             while 0<=nx<width and top<=ny<=bottom and board[nx][ny]==player:
                 dist += 1
+                coords += [(nx, ny)]
                 nx = x + dx*(dist+1)
                 ny = y + dy*(dist+1)
-            return dist
+            return coords
 
-        return count_unidirection(dx, dy) + 1 + count_unidirection(-dx, -dy) >= connected
+        bidirection_coords = trace_unidirection(dx, dy) + trace_unidirection(-dx, -dy)
+        return bidirection_coords if len(bidirection_coords) >= (connected-1) else []
 
-    return (check_bidirection(1, 0) or
-            check_bidirection(0, 1) or
-            check_bidirection(1, 1) or
-            check_bidirection(-1, 1) )
+    return (trace_bidirection(1, 0)  +
+            trace_bidirection(0, 1)  +
+            trace_bidirection(1, 1)  +
+            trace_bidirection(-1, 1) +
+            [(x,y)] )
 
 
 def board_is_full():
@@ -70,6 +74,14 @@ def board_is_full():
         if board[i][top] == 0:
             return False
     return True
+
+
+def highlight_coords(coords, original_colour):
+    'Highlight given coordinates with brighter version of the original colour'
+
+    highlight_colour = tuple([3*i for i in original_colour])
+    for x,y in coords:
+        plot(x, y, highlight_colour)
 
 
 def shake(duration_ms=100):
@@ -97,7 +109,7 @@ def play_one_game():
 
     board           = [[0]*8 for i in range(8)]     # empty the board
     screen.clear()
-    paint_edge( neutral_edge )
+    paint_edge( edge_colour )
     display.scroll("C4")
     current_player  = 1
     current_x       = int(width/2)
@@ -128,13 +140,14 @@ def play_one_game():
             if current_y>=top:                      # otherwise this column is full, do not drop the ball here
                 board[current_x][current_y] = current_player    # record the move on the board
 
-                if has_won(current_x, current_y, current_player):
-                    paint_edge(current_colour)
+                winning_coords = trace_winning_coords(current_x, current_y, current_player)
+                if len(winning_coords)>1:
+                    highlight_coords(winning_coords + [(width,0)], current_colour)
                     display.scroll(player_name[current_player] + ' wins' )
                     break
 
                 if board_is_full():                 # if nobody has won, but the board is full - it's a draw
-                    paint_edge(draw_edge)
+                    highlight_coords([(width,0)], draw_colour)
                     display.scroll('Draw')
                     break
 
