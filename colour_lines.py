@@ -124,6 +124,7 @@ while True:
                         for wx, wy in winning_coords:
                             board[wx][wy] = 0
                             plot(wx, wy, colours[0])
+                            nballs -= 1
                     else:
                         add_new_balls(3)
                 else:
