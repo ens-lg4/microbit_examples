@@ -2,20 +2,18 @@ from microbit import *
 import neopixel
 from random import randint
 
-screen = neopixel.NeoPixel(pin0, 64)    # physical 8*8
-board_size  = 8                         # logical (don't have to match)
+screen = neopixel.NeoPixel(pin0, 64)
+board_size  = 8
 
 
-# Enable NeoPixels to use x & y values
 def plot(x, y, colour):
-    screen[x+(y*8)] = colour            # physical 8
+    screen[x+(y*8)] = colour
     screen.show()
 
 
-black = (0, 0, 0)
-colours     = [black, (10, 0, 0), (0, 10, 0), (0, 0, 10), (7, 7, 0)]
+colours     = [(0, 0, 0), (10, 0, 0), (0, 10, 0), (0, 0, 10), (7, 7, 0)]
 highlight   = [(10, 10, 10), (40, 0, 0), (0, 40, 0), (0, 0, 40), (20, 20, 0)]
-selected    = [black, (2, 0, 0), (0, 2, 0), (0, 0, 2), (2, 2, 0)]
+selected    = [(0, 0, 0), (2, 0, 0), (0, 2, 0), (0, 0, 2), (2, 2, 0)]
 board       = [[0]*board_size for i in range(board_size)]
 n_balls     = 0
 
@@ -58,12 +56,12 @@ def there_is_path(A, B):
         for cx in range(8):
             for cy in range(8):
                 if all_levels_matrix[cx][cy]==level:
-                    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:   # all possible moves from C
+                    for dx, dy in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
                         nx, ny = cx+dx, cy+dy
-                        if 0<=nx<board_size and 0<=ny<board_size:                # still within the board?
+                        if 0<=nx<board_size and 0<=ny<board_size:
                             if (nx,ny)==B:
                                 return True
-                            elif board[nx][ny] == 0 and all_levels_matrix[nx][ny] == 0:  # new accessible?
+                            elif board[nx][ny] == 0 and all_levels_matrix[nx][ny] == 0:
                                 all_levels_matrix[nx][ny] = level+1
                                 new_edge_started = True
         if new_edge_started:
@@ -99,19 +97,15 @@ selected_c = 0
 while True:
     new_x, new_y, cursor_moved = cursor_x, cursor_y, True
 
-    # Up
     if pin8.read_digital() == 0:
         new_y = (cursor_y-1) % 8
-    # Down
     elif pin14.read_digital() == 0:
         new_y = (cursor_y+1) % 8
-    # Left
     elif pin12.read_digital() == 0:
         new_x = (cursor_x-1) % 8
-    # Left
     elif pin13.read_digital() == 0:
         new_x = (cursor_x+1) % 8
-    elif pin16.read_digital() == 0: # obligatory change of state
+    elif pin16.read_digital() == 0:
         under_cursor = board[cursor_x][cursor_y]
         if selected_c:
             if under_cursor==0:
@@ -120,7 +114,7 @@ while True:
                     board[selected_x][selected_y] = 0
 
                     winning_coords = trace_winning_coords(cursor_x, cursor_y, selected_c)
-                    if len(winning_coords)>1:   # clean up the winning balls
+                    if len(winning_coords)>1:
                         for wx, wy in winning_coords:
                             board[wx][wy] = 0
                             plot(wx, wy, colours[0])
@@ -129,10 +123,10 @@ while True:
                         add_new_balls(3)
                 else:
                     display.scroll('No way')
-            selected_c = board[selected_x][selected_y]  # unselect and revert to neutral shade
+            selected_c = board[selected_x][selected_y]
             plot(selected_x, selected_y, colours[selected_c])
             selected_c = 0
-        elif under_cursor!=0:   # select a new ball
+        elif under_cursor!=0:
             selected_x, selected_y, selected_c = cursor_x, cursor_y, under_cursor
         else:
             cursor_moved = False
