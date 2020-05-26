@@ -15,3 +15,13 @@ which adds:
 A two-player version of classic [Connect 4](https://en.wikipedia.org/wiki/Connect_Four) game.
 
 Here we show how to use NeoPixel screen as a 2D matrix, how to scan keys, how to use the vibrator.
+
+# [Colour lines](colour_lines.py)
+
+A minimalistic implementation of [Colour lines](http://www.vtorov.com/lines/) game.
+
+Here we show how to create a highlighting cursor, how to detect reachability between two points in a maze
+using very little heap memory available.
+
+An easier-to-understand (but more heap-memory greedy) [maze reachability algorithm for non-Micro Python](mazement.py) .
+
