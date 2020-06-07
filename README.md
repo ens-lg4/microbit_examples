@@ -25,3 +25,11 @@ using very little heap memory available.
 
 An easier-to-understand (but more heap-memory greedy) [maze reachability algorithm for non-Micro Python](mazement.py) .
 
+# [2048](2048_mb.py)
+
+An implementation of the game of [2048](https://play2048.co) .
+
+There is a natural way to map a grid of 4x4 tiles onto the matrix of 8x8 pixels
+by using 2x2 pixel tiles, which gives us an additional way to colour-code them by using patterns
+in addition to "solid" colours.
+
